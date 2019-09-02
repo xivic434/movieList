@@ -1,26 +1,51 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import SearchForm from "./SearchForm";
+class App extends React.Component {
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    state = {
+        isLoading: false,
+        date: "",
+        movies : []
+    };
+
+    getData = async (state) => {
+        await axios.get(
+            'http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=8512edd89b714bf2cf35fcb50adac48d&',
+            {
+                params: {
+                    targetDt: state.date
+                }
+            }
+        ).then (res =>{
+            if (res.status === 200 && res.data.hasOwnProperty("boxOfficeResult")) {
+                const boxOfficeResult = res.data.boxOfficeResult;
+                const dailyBoxOfficeList = boxOfficeResult.dailyBoxOfficeList ? boxOfficeResult.dailyBoxOfficeList : [];
+                this.setState({ isLoading: false ,movies : dailyBoxOfficeList });
+            }
+        })
+    };
+
+    componentWillUpdate(props, state) {
+        if(state.isLoading){
+            this.getData(state);
+        }
+    }
+
+    searchMovie = (state) => {
+        this.setState({
+            date: state.searchDate,
+            isLoading: true,
+            movies: [] 
+        });
+    }
+
+    render() {
+        const {isLoading , movies} = this.state;
+        return (
+            <SearchForm onCreate={this.searchMovie} movies={movies} isLoading={isLoading}/>
+        );
+    }
 }
 
 export default App;
