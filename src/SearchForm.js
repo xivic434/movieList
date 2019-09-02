@@ -5,7 +5,6 @@ class SearchForm extends React.Component {
     state = {
         searchDate : "",
     }
-
     handleSubmit = (e) => {
         console.log("handleSubmit");
         e.preventDefault();
@@ -24,22 +23,25 @@ class SearchForm extends React.Component {
     render() {
         const {searchDate } = this.state; 
         const {movies , isLoading} = this.props;
+        console.log(movies);
         return (
             <form onSubmit={this.handleSubmit} >
                 <input placeholder='yyyymmdd' name="searchDate" value={this.searchDate} onChange={this.handelOnChange} />
                 <button type="submit" >검색</button>
                 <div>
+                <ul>
                 {
                     isLoading ?
                         'Loding...'
                         : (movies && movies.map((item, i ) => {
                             return (
+                     
                                 <List key={i+1}
-                                    rank={item.rank}
-                                    name={item.movieNm} />
+                                    item={item}/>
                             );
                         }))
                 }
+                </ul>
                 </div>
             </form>
 
